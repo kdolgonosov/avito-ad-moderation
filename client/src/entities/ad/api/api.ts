@@ -58,3 +58,22 @@ export const postRequestChangesAd = async (id: number, body: RequestChangesBody)
     const { data } = await apiClient.post<AdMutationResponse>(`${ADS_PATH}/${id}/request-changes`, body)
     return data
 }
+
+export interface BulkAdMutationResponse {
+    ads: AdMutationResponse['ad'][]
+}
+
+export const postBulkApproveAds = async (ids: number[]): Promise<BulkAdMutationResponse> => {
+    const results = await Promise.all(ids.map(id => postApproveAd(id)))
+    return { ads: results.map(r => r.ad) }
+}
+
+export const postBulkRejectAds = async (ids: number[], body: RejectAdRequestBody): Promise<BulkAdMutationResponse> => {
+    const results = await Promise.all(ids.map(id => postRejectAd(id, body)))
+    return { ads: results.map(r => r.ad) }
+}
+
+export const postBulkRequestChangesAds = async (ids: number[], body: RequestChangesBody): Promise<BulkAdMutationResponse> => {
+    const results = await Promise.all(ids.map(id => postRequestChangesAd(id, body)))
+    return { ads: results.map(r => r.ad) }
+}

@@ -1,6 +1,6 @@
 import { Link as RouterLink, useLocation } from 'react-router-dom'
 import BoltIcon from '@mui/icons-material/Bolt'
-import { Box, Card, CardActionArea, CardContent, Chip, Stack, Typography } from '@mui/material'
+import { Box, Card, CardActionArea, CardContent, Checkbox, Chip, Stack, Typography } from '@mui/material'
 import { AdPriority, type Advertisement } from '@/entities/ad/model/types'
 import { getCategoryIcon } from '../model/categories'
 import { StatusBadge } from './StatusBadge'
@@ -8,17 +8,43 @@ import { StatusBadge } from './StatusBadge'
 interface AdCardProps {
     ad: Advertisement
     isNew?: boolean
+    selectable?: boolean
+    selected?: boolean
+    onToggleSelect?: (id: number) => void
 }
 
 const PLACEHOLDER_IMAGE = 'https://placehold.co/300x200/cccccc/969696?text=Fallback'
 
-export const AdCard = ({ ad, isNew }: AdCardProps) => {
+export const AdCard = ({ ad, isNew, selectable = true, selected = false, onToggleSelect }: AdCardProps) => {
     const coverSrc = ad.images?.[0] ?? PLACEHOLDER_IMAGE
     const CategoryIcon = getCategoryIcon(ad.categoryId)
     const location = useLocation()
+
     return (
-        <Card variant='outlined'>
-            <CardActionArea component={RouterLink} to={{ pathname: `/item/${ad.id}`, search: location.search }}>
+        <Card
+            variant='outlined'
+            sx={{
+                position: 'relative',
+                borderColor: selected ? 'primary.main' : undefined,
+                boxShadow: selected ? '0 0 0 2px rgba(25,118,210,0.4)' : undefined,
+            }}
+        >
+            {selectable && (
+                <Checkbox
+                    checked={selected}
+                    onChange={() => onToggleSelect?.(ad.id)}
+                    sx={{
+                        position: 'absolute',
+                        top: 8,
+                        left: 8,
+                        zIndex: 10,
+                        bgcolor: 'background.paper',
+                        borderRadius: '4px',
+                    }}
+                />
+            )}
+
+            <CardActionArea component={RouterLink} to={{ pathname: `/item/${ad.id}`, search: location.search }} sx={{ pl: selectable ? 0 : 0 }}>
                 <CardContent>
                     <Stack direction='row' spacing={2}>
                         <Box
@@ -53,10 +79,12 @@ export const AdCard = ({ ad, isNew }: AdCardProps) => {
                                 <Typography variant='h6' noWrap>
                                     {ad.title}
                                 </Typography>
+
                                 <Typography variant='body2' color='text.secondary' noWrap sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                                     <CategoryIcon fontSize='inherit' style={{ opacity: 0.6 }} />
                                     {ad.category} · {new Date(ad.createdAt).toLocaleString('ru-RU')}
                                 </Typography>
+
                                 <Typography variant='body1' sx={{ mt: 1 }}>
                                     {ad.price.toLocaleString('ru-RU', {
                                         style: 'currency',
@@ -67,16 +95,9 @@ export const AdCard = ({ ad, isNew }: AdCardProps) => {
 
                             <Stack spacing={1} alignItems='flex-end'>
                                 <StatusBadge status={ad.status} />
+
                                 {ad.priority === AdPriority.Urgent && (
-                                    <Chip
-                                        label='Срочно'
-                                        color='warning'
-                                        size='small'
-                                        icon={<BoltIcon fontSize='small' />}
-                                        sx={{
-                                            fontWeight: 500,
-                                        }}
-                                    />
+                                    <Chip label='Срочно' color='warning' size='small' icon={<BoltIcon fontSize='small' />} sx={{ fontWeight: 500 }} />
                                 )}
                             </Stack>
                         </Stack>
