@@ -1,5 +1,5 @@
-import { ItemPage, ListPage, StatsPage } from '@/pages'
 import { Navigate, Route, Routes } from 'react-router-dom'
+import { ItemPage, ListPage, StatsPage } from '@/pages'
 
 export const AppRouter = () => {
     return (

@@ -21,7 +21,7 @@ export class AppErrorBoundary extends React.Component<AppErrorBoundaryProps, App
     }
 
     componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-        // Здесь можно залогировать ошибку в сторонний сервис
+        // возможный лог ошибки в сторонний сервис
         console.error('AppErrorBoundary caught an error:', error, errorInfo)
     }
 
