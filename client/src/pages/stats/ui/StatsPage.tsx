@@ -1,6 +1,9 @@
 import { useMemo, useRef, useState } from 'react'
 import { Box, Button, CircularProgress, LinearProgress, Stack, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
-import type { StatsPeriod } from '@/entities/stats/model/types'
+import { ModeratorHeader } from '@/entities/moderator/ui/ModeratorHeader'
+import { StatsPeriod } from '@/entities/stats/model/types'
+import { formatDate } from '@/shared/lib/utils/format'
+import { DateRangePicker } from '@/shared/ui'
 import { useStatsData } from '../hooks/useStatsData'
 import { exportStatsCsv } from '../lib/exportStatsCsv'
 import { exportStatsPdf } from '../lib/exportStatsPdf'
@@ -10,15 +13,39 @@ import { StatsCategoriesChart } from './StatsCategoriesChart'
 import { StatsDecisionsPieChart } from './StatsDecisionsPieChart'
 
 export const StatsPage = () => {
-    const [period, setPeriod] = useState<StatsPeriod>('today')
+    const [period, setPeriod] = useState<StatsPeriod>(StatsPeriod.Today)
+
+    const [focusKey, setFocusKey] = useState(0)
+    const [customRange, setCustomRange] = useState<[Date | null, Date | null]>([null, null])
+    const [customFrom, customTo] = customRange
+
     const reportRef = useRef<HTMLDivElement | null>(null)
-    const { summaryQuery, activityQuery, decisionsQuery, categoriesQuery, isInitialLoading, isAnyFetching } = useStatsData({ period })
+
+    const fromStr = period === StatsPeriod.Custom && customFrom ? formatDate(customFrom) : undefined
+    const toStr = period === StatsPeriod.Custom && customTo ? formatDate(customTo) : undefined
+    const isCustomIncomplete = period === StatsPeriod.Custom && (!customFrom || !customTo)
+
+    const { summaryQuery, activityQuery, decisionsQuery, categoriesQuery, isInitialLoading, isAnyFetching } = useStatsData({
+        period,
+        from: fromStr,
+        to: toStr,
+    })
 
     const handlePeriodChange = (_: unknown, value: StatsPeriod | null) => {
         if (!value) return
+
         setPeriod(value)
+
+        if (value === StatsPeriod.Custom) {
+            setFocusKey(focusKey + 1) // триггерим фокус
+        } else {
+            setCustomRange([null, null]) // сброс диапазона
+        }
     }
+
     const handleExportCsv = () => {
+        if (period === StatsPeriod.Custom && isCustomIncomplete) return
+
         exportStatsCsv({
             period,
             summary: summaryQuery.data,
@@ -29,6 +56,7 @@ export const StatsPage = () => {
 
     const handleExportPdf = async () => {
         if (!reportRef.current) return
+        if (period === StatsPeriod.Custom && isCustomIncomplete) return
 
         try {
             await exportStatsPdf({
@@ -40,7 +68,7 @@ export const StatsPage = () => {
         }
     }
 
-    // Подготовка данных для чартов
+    // данные для чартов
     const activityChartData = useMemo(() => {
         if (!activityQuery.data || activityQuery.data.length === 0) return null
 
@@ -77,9 +105,11 @@ export const StatsPage = () => {
     }, [categoriesQuery.data])
 
     const summary = summaryQuery.data
+    const isExportDisabled = isInitialLoading || (period === StatsPeriod.Custom && isCustomIncomplete)
 
     return (
         <Box>
+            <ModeratorHeader />
             <Box
                 sx={{
                     display: 'flex',
@@ -90,20 +120,34 @@ export const StatsPage = () => {
                     flexWrap: 'wrap',
                 }}
             >
-                <Typography variant='h4'>Статистика модератора</Typography>
+                <Typography variant='h5'>Статистика</Typography>
 
                 <Stack direction='row' spacing={2} alignItems='center' flexWrap='wrap'>
                     <ToggleButtonGroup size='small' color='primary' value={period} exclusive onChange={handlePeriodChange}>
-                        <ToggleButton value='today'>Сегодня</ToggleButton>
-                        <ToggleButton value='week'>7 дней</ToggleButton>
-                        <ToggleButton value='month'>30 дней</ToggleButton>
+                        <ToggleButton value={StatsPeriod.Today}>Сегодня</ToggleButton>
+                        <ToggleButton value={StatsPeriod.Week}>7 дней</ToggleButton>
+                        <ToggleButton value={StatsPeriod.Month}>30 дней</ToggleButton>
+                        <ToggleButton value={StatsPeriod.Custom}>Период</ToggleButton>
                     </ToggleButtonGroup>
 
+                    {period === StatsPeriod.Custom && (
+                        <DateRangePicker
+                            focusTrigger={focusKey}
+                            value={{
+                                start: customFrom,
+                                end: customTo,
+                            }}
+                            onChange={({ start, end }) => {
+                                setCustomRange([start, end])
+                            }}
+                        />
+                    )}
+
                     <Stack direction='row' spacing={1}>
-                        <Button variant='outlined' size='small' onClick={handleExportCsv}>
+                        <Button variant='outlined' size='small' onClick={handleExportCsv} disabled={isExportDisabled || !summary}>
                             Экспорт CSV
                         </Button>
-                        <Button variant='outlined' size='small' onClick={handleExportPdf}>
+                        <Button variant='outlined' size='small' onClick={handleExportPdf} disabled={isExportDisabled || !summary}>
                             PDF отчёт
                         </Button>
                     </Stack>
@@ -125,30 +169,13 @@ export const StatsPage = () => {
                             display: 'grid',
                             gridTemplateColumns: {
                                 xs: '1fr',
-                                sm: 'repeat(2, minmax(0, 1fr))',
-                                md: 'repeat(4, minmax(0, 1fr))',
+                                sm: 'repeat(4, minmax(0, 1fr))',
                             },
                             gap: 2,
                             mb: 3,
                         }}
                     >
                         <StatCard title='Всего проверено' value={summary?.totalReviewed ?? '—'} />
-                        <StatCard title='Сегодня' value={summary?.totalReviewedToday ?? '—'} />
-                        <StatCard title='За 7 дней' value={summary?.totalReviewedThisWeek ?? '—'} />
-                        <StatCard title='За 30 дней' value={summary?.totalReviewedThisMonth ?? '—'} />
-                    </Box>
-
-                    <Box
-                        sx={{
-                            display: 'grid',
-                            gridTemplateColumns: {
-                                xs: '1fr',
-                                sm: 'repeat(3, minmax(0, 1fr))',
-                            },
-                            gap: 2,
-                            mb: 3,
-                        }}
-                    >
                         <StatCard title='% одобрено' value={summary ? `${summary.approvedPercentage.toFixed(1)}%` : '—'} />
                         <StatCard title='% отклонено' value={summary ? `${summary.rejectedPercentage.toFixed(1)}%` : '—'} />
                         <StatCard title='% на доработку' value={summary ? `${summary.requestChangesPercentage.toFixed(1)}%` : '—'} />
@@ -166,7 +193,6 @@ export const StatsPage = () => {
                         }}
                     >
                         <StatsActivityChart activityChartData={activityChartData} />
-
                         <StatsDecisionsPieChart decisionsPieData={decisionsPieData} />
                     </Box>
 

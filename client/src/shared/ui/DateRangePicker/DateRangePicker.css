@@ -1,0 +1,122 @@
+/* Базовый контейнер: задаём css-переменные, а дальше используем их ниже */
+.stats-date-range-picker {
+    --dp-bg: #ffffff;
+    --dp-border: rgba(0, 0, 0, 0.12);
+    --dp-shadow: 0px 4px 20px rgba(0, 0, 0, 0.08);
+    --dp-header-bg: #f5f5f5;
+    --dp-header-text: rgba(0, 0, 0, 0.87);
+    --dp-day-hover-bg: rgba(25, 118, 210, 0.08);
+    --dp-day-selected-bg: #1976d2;
+    --dp-day-selected-text: #ffffff;
+    --dp-text: rgba(0, 0, 0, 0.87);
+    --dp-muted-text: rgba(0, 0, 0, 0.6);
+    --dp-radius: 8px;
+    --dp-z-index: 1300;
+    font-family: inherit;
+}
+
+/* Светлая тема */
+.stats-date-range-picker--light {
+    --dp-bg: #ffffff;
+    --dp-border: rgba(0, 0, 0, 0.12);
+    --dp-shadow: 0px 4px 20px rgba(0, 0, 0, 0.08);
+    --dp-header-bg: #f5f5f5;
+    --dp-header-text: rgba(0, 0, 0, 0.87);
+    --dp-day-hover-bg: rgba(25, 118, 210, 0.08);
+    --dp-day-selected-bg: #1976d2;
+    --dp-day-selected-text: #ffffff;
+    --dp-text: rgba(0, 0, 0, 0.87);
+    --dp-muted-text: rgba(0, 0, 0, 0.6);
+}
+
+/* Тёмная тема */
+.stats-date-range-picker--dark {
+    --dp-bg: #1e1e1e;
+    --dp-border: rgba(255, 255, 255, 0.16);
+    --dp-shadow: 0px 4px 20px rgba(0, 0, 0, 0.5);
+    --dp-header-bg: #2a2a2a;
+    --dp-header-text: rgba(255, 255, 255, 0.9);
+    --dp-day-hover-bg: rgba(144, 202, 249, 0.16);
+    --dp-day-selected-bg: #90caf9; /* primary.light */
+    --dp-day-selected-text: #0a1929;
+    --dp-text: rgba(255, 255, 255, 0.9);
+    --dp-muted-text: rgba(255, 255, 255, 0.7);
+}
+
+/* Попап календаря */
+.stats-date-range-picker .react-datepicker {
+    background-color: var(--dp-bg);
+    border: 1px solid var(--dp-border);
+    border-radius: var(--dp-radius);
+    box-shadow: var(--dp-shadow);
+    color: var(--dp-text);
+    font-family: inherit;
+}
+
+/* Треугольник попапа */
+.stats-date-range-picker .react-datepicker__triangle {
+    border-bottom-color: var(--dp-bg) !important;
+}
+
+/* Хедер */
+.stats-date-range-picker .react-datepicker__header {
+    background-color: var(--dp-header-bg);
+    border-bottom: 1px solid var(--dp-border);
+    border-top-left-radius: var(--dp-radius);
+    border-top-right-radius: var(--dp-radius);
+}
+
+.stats-date-range-picker .react-datepicker__current-month,
+.stats-date-range-picker .react-datepicker-time__header,
+.stats-date-range-picker .react-datepicker-year-header {
+    color: var(--dp-header-text);
+    font-weight: 500;
+}
+
+/* Дни недели */
+.stats-date-range-picker .react-datepicker__day-name {
+    color: var(--dp-muted-text);
+}
+
+/* Дни */
+.stats-date-range-picker .react-datepicker__day,
+.stats-date-range-picker .react-datepicker__day--keyboard-selected {
+    color: var(--dp-text);
+    border-radius: 999px;
+}
+
+.stats-date-range-picker .react-datepicker__day:hover {
+    background-color: var(--dp-day-hover-bg);
+}
+
+/* Выбранный день и диапазон */
+.stats-date-range-picker .react-datepicker__day--in-range,
+.stats-date-range-picker .react-datepicker__day--in-selecting-range {
+    background-color: var(--dp-day-hover-bg);
+    color: var(--dp-text);
+    border-radius: 0;
+}
+
+.stats-date-range-picker .react-datepicker__day--selected,
+.stats-date-range-picker .react-datepicker__day--range-start,
+.stats-date-range-picker .react-datepicker__day--range-end {
+    background-color: var(--dp-day-selected-bg) !important;
+    color: var(--dp-day-selected-text) !important;
+}
+
+/* Сегодня */
+.stats-date-range-picker .react-datepicker__day--today {
+    font-weight: 600;
+    border: 1px solid var(--dp-border);
+}
+
+/* Навигационные стрелки */
+.stats-date-range-picker .react-datepicker__navigation-icon::before {
+    border-color: var(--dp-muted-text);
+}
+
+/* Текст инпута (через MUI TextField мы и так в теме, но на всякий случай) */
+.stats-date-range-picker .react-datepicker-wrapper,
+.stats-date-range-picker .react-datepicker__input-container {
+    width: 100%;
+}

@@ -2,21 +2,31 @@ import { useStatsActivity } from '@/entities/stats/hooks/useStatsActivity'
 import { useStatsCategories } from '@/entities/stats/hooks/useStatsCategories'
 import { useStatsDecisions } from '@/entities/stats/hooks/useStatsDecisions'
 import { useStatsSummary } from '@/entities/stats/hooks/useStatsSummary'
-import type { StatsPeriod } from '@/entities/stats/model/types'
+import { StatsPeriod } from '@/entities/stats/model/types'
 
 interface UseStatsDataParams {
     period: StatsPeriod
+    from?: string | null
+    to?: string | null
 }
 
-export const useStatsData = ({ period }: UseStatsDataParams) => {
-    const queryParams = { period }
+export const useStatsData = ({ period, from, to }: UseStatsDataParams) => {
+    const isCustom = period === StatsPeriod.Custom
 
-    const summaryQuery = useStatsSummary(queryParams)
-    const activityQuery = useStatsActivity(queryParams)
-    const decisionsQuery = useStatsDecisions(queryParams)
-    const categoriesQuery = useStatsCategories(queryParams)
+    // теперь точно boolean
+    const hasValidRange = !isCustom || (!!from && !!to)
+    const enabled = hasValidRange
 
-    const isInitialLoading = summaryQuery.isLoading && activityQuery.isLoading && decisionsQuery.isLoading && categoriesQuery.isLoading
+    const queryParams = isCustom && from && to ? { period, from, to } : { period }
+
+    const options = { enabled }
+
+    const summaryQuery = useStatsSummary(queryParams, options)
+    const activityQuery = useStatsActivity(queryParams, options)
+    const decisionsQuery = useStatsDecisions(queryParams, options)
+    const categoriesQuery = useStatsCategories(queryParams, options)
+
+    const isInitialLoading = enabled && summaryQuery.isLoading && activityQuery.isLoading && decisionsQuery.isLoading && categoriesQuery.isLoading
 
     const isAnyFetching = summaryQuery.isFetching || activityQuery.isFetching || decisionsQuery.isFetching || categoriesQuery.isFetching
 
