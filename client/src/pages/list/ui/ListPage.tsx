@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { Box, Button, CircularProgress, LinearProgress, Stack, Typography } from '@mui/material'
 import { AdList } from '@/pages/list/ui/AdList'
@@ -35,6 +36,7 @@ export const ListPage = () => {
     // синхронизация URL
     useListUrlSync(uiFilters, page, setSearchParams)
 
+    const listKey = useMemo(() => `${filtersResetKey}-${page}-${ads.map(ad => ad.id).join(',')}`, [filtersResetKey, page, ads])
     return (
         <>
             <Typography variant='h4' gutterBottom>
@@ -108,7 +110,7 @@ export const ListPage = () => {
             )}
             {!isLoading && ads.length > 0 && (
                 <>
-                    <AdList listKey={`${filtersResetKey}-${page}`} ads={ads} newIds={newIds} selectedIds={selectedIds as number[]} onToggleSelect={toggleSelect} />
+                    <AdList listKey={listKey} ads={ads} newIds={newIds} selectedIds={selectedIds as number[]} onToggleSelect={toggleSelect} />
                     {pagination && <ListPagination page={pagination.currentPage} count={pagination.totalPages} onChange={handlePageChange} />}
                 </>
             )}

@@ -19,24 +19,27 @@ export const AdModerationActionsBase = ({ isApproved, isProcessing, onApprove, o
             if (isDialogOpen) return
             if (event.altKey || event.ctrlKey || event.metaKey) return
 
-            const key = event.key.toLowerCase()
+            switch (event.code) {
+                case 'KeyA':
+                    if (!disableAll && !isApproved) {
+                        event.preventDefault()
+                        onApprove()
+                    }
+                    break
 
-            if (key === 'a' && !disableAll && !isApproved) {
-                event.preventDefault()
-                onApprove()
-                return
-            }
+                case 'KeyD':
+                    if (!disableAll) {
+                        event.preventDefault()
+                        onOpenDialog(ModerationDialogMode.Reject)
+                    }
+                    break
 
-            if (key === 'd' && !disableAll) {
-                event.preventDefault()
-                onOpenDialog(ModerationDialogMode.Reject)
-                return
-            }
-
-            if (key === 'r' && !disableAll) {
-                event.preventDefault()
-                onOpenDialog(ModerationDialogMode.Changes)
-                return
+                case 'KeyR':
+                    if (!disableAll) {
+                        event.preventDefault()
+                        onOpenDialog(ModerationDialogMode.Changes)
+                    }
+                    break
             }
         }
 
