@@ -1,6 +1,6 @@
 import React from 'react'
-import { Link as RouterLink } from 'react-router-dom'
-import { AppBar, Box, Button, Container, Toolbar, Typography } from '@mui/material'
+import { AppBar, Box, Container, Toolbar, Typography } from '@mui/material'
+import { ModeratorMenu } from '@/entities/moderator/ui/ModeratorMenu'
 import { ThemeSwitcher } from '@/features/ui-theme-switch/ui/ThemeSwitcher'
 
 interface LayoutProps {
@@ -16,12 +16,7 @@ export const Layout = ({ children }: LayoutProps) => {
                         Модерации объявлений
                     </Typography>
                     <ThemeSwitcher />
-                    <Button color='inherit' component={RouterLink} to='/list'>
-                        Список
-                    </Button>
-                    <Button color='inherit' component={RouterLink} to='/stats'>
-                        Статистика
-                    </Button>
+                    <ModeratorMenu />
                 </Toolbar>
             </AppBar>
             <Container sx={{ flex: 1, py: 3 }}>{children}</Container>
