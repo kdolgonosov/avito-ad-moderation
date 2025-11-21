@@ -108,7 +108,7 @@ export const ListPage = () => {
             )}
             {!isLoading && ads.length > 0 && (
                 <>
-                    <AdList ads={ads} newIds={newIds} selectedIds={selectedIds as number[]} onToggleSelect={toggleSelect} />
+                    <AdList listKey={`${filtersResetKey}-${page}`} ads={ads} newIds={newIds} selectedIds={selectedIds as number[]} onToggleSelect={toggleSelect} />
                     {pagination && <ListPagination page={pagination.currentPage} count={pagination.totalPages} onChange={handlePageChange} />}
                 </>
             )}

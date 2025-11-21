@@ -11,6 +11,10 @@ export const useListPagination = (searchParams: URLSearchParams, filtersResetKey
         setPage(1)
     }, [filtersResetKey])
 
+    useEffect(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+    }, [page])
+
     const handlePageChange = (_: unknown, newPage: number) => {
         setPage(newPage)
     }
