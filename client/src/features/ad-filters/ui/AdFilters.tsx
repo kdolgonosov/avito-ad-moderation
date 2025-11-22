@@ -1,12 +1,14 @@
-import type { ChangeEvent } from 'react'
+import { useEffect, useRef, useState, type ChangeEvent } from 'react'
 import SearchIcon from '@mui/icons-material/Search'
-import { Box, Button, FormControl, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, TextField, type SelectChangeEvent } from '@mui/material'
+import { Box, Button, FormControl, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, TextField, Typography, type SelectChangeEvent } from '@mui/material'
 import { CATEGORIES, getCategoryIcon } from '@/entities/ad/model/categories'
 import { STATUS_ICONS } from '@/entities/ad/model/status'
 import type { AdStatus } from '@/entities/ad/model/types'
 import { StatusBadge } from '@/entities/ad/ui/StatusBadge'
+import { Kbd } from '@/shared/ui'
 import { INITIAL_FILTERS, SORT_OPTIONS, STATUS_OPTIONS } from '../model/constants'
 import type { AdFiltersValues } from '../model/types'
+import { AdFiltersPresetsDialog } from './AdFiltersPresetsDialog'
 
 interface AdFiltersBarProps {
     filters: AdFiltersValues
@@ -14,6 +16,35 @@ interface AdFiltersBarProps {
 }
 
 export const AdFilters = ({ filters, onFiltersChange }: AdFiltersBarProps) => {
+    const [isPresetsOpen, setIsPresetsOpen] = useState(false)
+
+    const searchInputRef = useRef<HTMLInputElement | null>(null)
+
+    useEffect(() => {
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.code !== 'Slash' || event.altKey || event.ctrlKey || event.metaKey) return
+
+            const target = event.target as HTMLElement | null
+            if (target) {
+                const tag = target.tagName
+                const isEditable = tag === 'INPUT' || tag === 'TEXTAREA' || target.hasAttribute('contenteditable')
+
+                if (isEditable) return
+            }
+
+            event.preventDefault()
+            if (searchInputRef.current) {
+                searchInputRef.current.focus()
+                searchInputRef.current.select()
+            }
+        }
+
+        window.addEventListener('keydown', handleKeyDown)
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown)
+        }
+    }, [])
+
     const handleQueryChange = (event: ChangeEvent<HTMLInputElement>) => {
         onFiltersChange({
             ...filters,
@@ -93,18 +124,28 @@ export const AdFilters = ({ filters, onFiltersChange }: AdFiltersBarProps) => {
             <Stack spacing={2}>
                 {/* Поиск */}
                 <TextField
+                    inputRef={searchInputRef}
                     size='small'
                     label='Поиск'
                     placeholder='Название объявления...'
                     value={filters.search}
                     onChange={handleQueryChange}
                     sx={{ minWidth: 320, flexShrink: 0 }}
-                    InputProps={{
-                        startAdornment: (
-                            <InputAdornment position='start'>
-                                <SearchIcon fontSize='small' />
-                            </InputAdornment>
-                        ),
+                    slotProps={{
+                        input: {
+                            startAdornment: (
+                                <InputAdornment position='start'>
+                                    <SearchIcon fontSize='small' />
+                                </InputAdornment>
+                            ),
+                            endAdornment: (
+                                <InputAdornment position='end'>
+                                    <Typography variant='caption'>
+                                        Нажмите <Kbd>/</Kbd>
+                                    </Typography>
+                                </InputAdornment>
+                            ),
+                        },
                     }}
                 />
                 <Stack direction='row' spacing={2} flexWrap='wrap' useFlexGap alignItems='center'>
@@ -228,11 +269,24 @@ export const AdFilters = ({ filters, onFiltersChange }: AdFiltersBarProps) => {
                     </FormControl>
                 </Stack>
                 {hasActiveFilters && (
-                    <Button variant='text' onClick={handleResetFilters} sx={{ ml: 'auto' }}>
-                        Сбросить фильтры
-                    </Button>
+                    <Stack direction='row' spacing={1} justifyContent='flex-end'>
+                        <Button variant='outlined' size='small' onClick={() => setIsPresetsOpen(true)}>
+                            Сохраненные фильтры
+                        </Button>
+                        <Button variant='text' onClick={handleResetFilters}>
+                            Сбросить фильтры
+                        </Button>
+                    </Stack>
+                )}
+                {!hasActiveFilters && (
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                        <Button variant='outlined' size='small' onClick={() => setIsPresetsOpen(true)}>
+                            Сохраненные фильтры
+                        </Button>
+                    </Box>
                 )}
             </Stack>
+            <AdFiltersPresetsDialog open={isPresetsOpen} onClose={() => setIsPresetsOpen(false)} currentFilters={filters} onApplyPreset={onFiltersChange} />
         </Paper>
     )
 }

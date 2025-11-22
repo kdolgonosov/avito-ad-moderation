@@ -36,12 +36,15 @@ export const ListPage = () => {
     // синхронизация URL
     useListUrlSync(uiFilters, page, setSearchParams)
 
+    // для корректной работы анимаций
     const listKey = useMemo(() => `${filtersResetKey}-${page}-${ads.map(ad => ad.id).join(',')}`, [filtersResetKey, page, ads])
     return (
         <>
             <Typography variant='h4' gutterBottom>
                 Список объявлений
             </Typography>
+
+            <AdFilters filters={uiFilters} onFiltersChange={setFilters} />
             <Box
                 sx={{
                     display: 'flex',
@@ -55,7 +58,6 @@ export const ListPage = () => {
 
                 {!isLoading && <LastUpdatedInfo lastUpdatedAt={lastUpdatedAt} isFetching={isFetching} onRefresh={() => refetch()} />}
             </Box>
-            <AdFilters filters={uiFilters} onFiltersChange={setFilters} />
             {hasSelection && (
                 <Box
                     sx={{
