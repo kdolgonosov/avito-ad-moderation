@@ -8,7 +8,7 @@
 
 ```bash
 # Переход в директорию проекта
-cd avito-moderation
+cd avito-ad-moderation
 
 # Запуск
 docker compose up
