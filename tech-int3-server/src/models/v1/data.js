@@ -190,8 +190,18 @@ const dataStore = {
 
 module.exports = dataStore;
 
-// // Функция для генерации N новых объявлений, начиная с текущего максимального id
+// const MAX_ADS = 200;
+
 // const generateNewAds = (count) => {
+//   if (dataStore.ads.length >= MAX_ADS) {
+//     console.log("Достигнут лимит объявлений, генерация остановлена");
+//     return;
+//   }
+
+//   const remaining = MAX_ADS - dataStore.ads.length;
+//   const toGenerate = Math.min(count, remaining);
+//   if (toGenerate <= 0) return;
+
 //   // 1. Находим максимальную дату среди существующих объявлений
 //   const lastCreatedAt = dataStore.ads.reduce((max, ad) => {
 //     const date = new Date(ad.createdAt).getTime();
@@ -200,7 +210,7 @@ module.exports = dataStore;
 
 //   // 2. Генерируем свежие объявления
 //   const startId = dataStore.ads.length + 1;
-//   const rawNewAds = generateMockAds(count);
+//   const rawNewAds = generateMockAds(toGenerate);
 
 //   const newAds = rawNewAds.map((ad, index) => {
 //     const newDate = new Date(lastCreatedAt + (index + 1) * 1000); // гарантированно позже
@@ -217,12 +227,20 @@ module.exports = dataStore;
 //   dataStore.ads.push(...newAds);
 
 //   console.log(
-//     `Добавлено ${count} объявлений. Последняя дата: ${
-//       newAds[newAds.length - 1].createdAt
-//     }`
+//     `Добавлено ${toGenerate} объявлений. Всего: ${
+//       dataStore.ads.length
+//     }. Последняя дата: ${newAds[newAds.length - 1].createdAt}`
 //   );
 // };
-// // Интервал — каждые 10 секунд генерируем 2 новых объявления
-// setInterval(() => {
+
+// const intervalId = setInterval(() => {
+//   if (dataStore.ads.length >= MAX_ADS) {
+//     console.log(
+//       "Максимальное количество объявлений достигнуто, очищаем интервал"
+//     );
+//     clearInterval(intervalId);
+//     return;
+//   }
+
 //   generateNewAds(2);
 // }, 10000);

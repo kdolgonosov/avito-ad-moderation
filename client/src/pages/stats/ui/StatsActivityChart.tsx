@@ -53,14 +53,17 @@ export const StatsActivityChart = ({ activityChartData }: StatsActivityChartProp
                             {
                                 data: activityChartData.approved,
                                 label: 'Одобрено',
+                                color: theme.palette.success.main,
                             },
                             {
                                 data: activityChartData.rejected,
                                 label: 'Отклонено',
+                                color: theme.palette.error.main,
                             },
                             {
                                 data: activityChartData.changes,
                                 label: 'На доработку',
+                                color: theme.palette.warning.main,
                             },
                         ]}
                         margin={{

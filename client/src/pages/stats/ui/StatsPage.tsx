@@ -79,23 +79,6 @@ export const StatsPage = () => {
             console.error('Ошибка при формировании PDF', error)
         }
     }
-    // const handleExportPdf = async () => {
-    //     if (!reportRef.current) return
-    //     if (!moderator) return
-    //     if (period === StatsPeriod.Custom && isCustomIncomplete) return
-
-    //     try {
-    //         await exportStatsPdf({
-    //             container: reportRef.current,
-    //             moderatorInfo: `${moderator.name}, ${moderator.role}, ${moderator.email}`,
-    //             period,
-    //             from: fromStr,
-    //             to: toStr,
-    //         })
-    //     } catch (error) {
-    //         console.error('Ошибка при формировании PDF', error)
-    //     }
-    // }
 
     // данные для чартов
     const activityChartData = useMemo(() => {
@@ -117,9 +100,9 @@ export const StatsPage = () => {
         if (!total) return null
 
         return [
-            { id: 0, value: approved, label: 'Одобрено' },
-            { id: 1, value: rejected, label: 'Отклонено' },
-            { id: 2, value: requestChanges, label: 'На доработку' },
+            { id: 0, value: approved, label: 'Одобрено', color: theme.palette.success.main },
+            { id: 1, value: rejected, label: 'Отклонено', color: theme.palette.error.main },
+            { id: 2, value: requestChanges, label: 'На доработку', color: theme.palette.warning.main },
         ]
     }, [decisionsQuery.data])
 
