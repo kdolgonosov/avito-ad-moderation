@@ -24,7 +24,10 @@ export const BulkAdModerationActions = ({ selectedIds, clearSelection }: BulkAdM
         setDialogMode(mode)
     }
 
-    const handleCloseDialog = () => setDialogMode(null)
+    const handleCloseDialog = () => {
+        setDialogMode(null)
+        clearSelection()
+    }
 
     const handleApprove = () => {
         if (!hasSelection) return

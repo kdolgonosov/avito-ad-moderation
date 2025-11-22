@@ -2,7 +2,12 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { postBulkApproveAds, postBulkRejectAds, postBulkRequestChangesAds } from '../api/api'
 import type { RejectAdRequestBody, RequestChangesBody } from '../model/types'
 
-export const useBulkAdModerationMutations = () => {
+interface UseBulkAdModerationMutationsOptions {
+    onRejectSuccess?: () => void
+    onRequestChangesSuccess?: () => void
+}
+
+export const useBulkAdModerationMutations = (options?: UseBulkAdModerationMutationsOptions) => {
     const queryClient = useQueryClient()
 
     const invalidateAfterBulkChange = (ids: number[]) => {
@@ -23,6 +28,7 @@ export const useBulkAdModerationMutations = () => {
         mutationFn: ({ ids, body }: { ids: number[]; body: RejectAdRequestBody }) => postBulkRejectAds(ids, body),
         onSuccess: (_data, { ids }) => {
             invalidateAfterBulkChange(ids)
+            options?.onRejectSuccess?.()
         },
     })
 
@@ -30,6 +36,7 @@ export const useBulkAdModerationMutations = () => {
         mutationFn: ({ ids, body }: { ids: number[]; body: RequestChangesBody }) => postBulkRequestChangesAds(ids, body),
         onSuccess: (_data, { ids }) => {
             invalidateAfterBulkChange(ids)
+            options?.onRequestChangesSuccess?.()
         },
     })
 

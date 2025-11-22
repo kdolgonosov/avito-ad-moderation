@@ -11,7 +11,10 @@ interface BulkAdModerationDialogProps {
 }
 
 export const BulkAdModerationDialog = ({ selectedIds, mode, open, onClose }: BulkAdModerationDialogProps) => {
-    const { rejectBulkMutation, requestChangesBulkMutation, isProcessing } = useBulkAdModerationMutations()
+    const { rejectBulkMutation, requestChangesBulkMutation, isProcessing } = useBulkAdModerationMutations({
+        onRejectSuccess: onClose,
+        onRequestChangesSuccess: onClose,
+    })
     const handleSubmit = (body: RejectAdRequestBody | RequestChangesBody) => {
         if (mode === ModerationDialogMode.Reject) {
             rejectBulkMutation.mutate({
