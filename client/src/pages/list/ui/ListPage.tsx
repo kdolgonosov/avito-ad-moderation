@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { Box, Button, CircularProgress, LinearProgress, Stack, Typography } from '@mui/material'
 import { AdList } from '@/pages/list/ui/AdList'
@@ -12,7 +12,8 @@ import { NewAdsBanner } from './NewAdsBanner'
 
 export const ListPage = () => {
     const [searchParams, setSearchParams] = useSearchParams()
-
+    // флаг авто-рефетча
+    const [isAutoRefetchEnabled, setIsAutoRefetchEnabled] = useState(true)
     // фильтры
     const { uiFilters, apiFilters, filtersResetKey, setFilters } = useListFilters(searchParams)
 
@@ -20,7 +21,7 @@ export const ListPage = () => {
     const { page, handlePageChange } = useListPagination(searchParams, filtersResetKey)
 
     // данные списка
-    const { ads, pagination, latestCreatedAt, isLoading, isFetching, refetch, lastUpdatedAt } = useListData(apiFilters, page)
+    const { ads, pagination, latestCreatedAt, isLoading, isFetching, refetch, lastUpdatedAt } = useListData(apiFilters, page, isAutoRefetchEnabled)
 
     // новые объявления
     const { newCount, newIds, handleShowNew } = useListNewItems({
@@ -33,6 +34,12 @@ export const ListPage = () => {
     const totalItems = pagination?.totalItems ?? 0
 
     const { selectedIds, selectedCount, hasSelection, toggleSelect, toggleSelectAll, clearSelection } = useBulkSelection({ items: ads })
+
+    // пока есть выбранные объявление выключаем автообновление
+    useEffect(() => {
+        setIsAutoRefetchEnabled(!hasSelection)
+    }, [hasSelection])
+
     // синхронизация URL
     useListUrlSync(uiFilters, page, setSearchParams)
 

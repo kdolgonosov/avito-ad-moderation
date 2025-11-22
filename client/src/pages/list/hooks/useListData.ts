@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useGetAdsListQuery } from '@/entities/ad/hooks/useGetAdsListQuery'
 import type { AdsListFilters } from '@/features/ad-filters/model/types'
 
-export const useListData = (apiFilters: AdsListFilters, page: number) => {
+export const useListData = (apiFilters: AdsListFilters, page: number, enabled: boolean) => {
     const [lastUpdatedAt, setLastUpdatedAt] = useState<Date | null>(null)
 
     const { ads, pagination, latestCreatedAt, isLoading, isFetching, refetch } = useGetAdsListQuery(
@@ -10,6 +10,7 @@ export const useListData = (apiFilters: AdsListFilters, page: number) => {
         { page, limit: 10 },
         {
             refetchInterval: 10_000,
+            enabled: enabled,
         }
     )
 
