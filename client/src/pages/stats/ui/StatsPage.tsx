@@ -2,7 +2,7 @@ import { useMemo, useRef, useState } from 'react'
 import { Box, Button, CircularProgress, LinearProgress, Stack, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
 import { ModeratorHeader } from '@/entities/moderator/ui/ModeratorHeader'
 import { StatsPeriod } from '@/entities/stats/model/types'
-import { formatDate } from '@/shared/lib/utils/format'
+import { formatDateYMD } from '@/shared/lib/utils/format'
 import { DateRangePicker } from '@/shared/ui'
 import { useStatsData } from '../hooks/useStatsData'
 import { exportStatsCsv } from '../lib/exportStatsCsv'
@@ -21,8 +21,8 @@ export const StatsPage = () => {
 
     const reportRef = useRef<HTMLDivElement | null>(null)
 
-    const fromStr = period === StatsPeriod.Custom && customFrom ? formatDate(customFrom) : undefined
-    const toStr = period === StatsPeriod.Custom && customTo ? formatDate(customTo) : undefined
+    const fromStr = period === StatsPeriod.Custom && customFrom ? formatDateYMD(customFrom) : undefined
+    const toStr = period === StatsPeriod.Custom && customTo ? formatDateYMD(customTo) : undefined
     const isCustomIncomplete = period === StatsPeriod.Custom && (!customFrom || !customTo)
 
     const { summaryQuery, activityQuery, decisionsQuery, categoriesQuery, isInitialLoading, isAnyFetching } = useStatsData({

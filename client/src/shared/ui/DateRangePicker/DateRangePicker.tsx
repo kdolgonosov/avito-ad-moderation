@@ -2,7 +2,7 @@ import { ru } from 'date-fns/locale/ru'
 import DatePicker, { registerLocale } from 'react-datepicker'
 import { useEffect, useRef } from 'react'
 import { Box, TextField, useTheme } from '@mui/material'
-import { formatDate } from '@/shared/lib/utils/format'
+import { formatDateYMD } from '@/shared/lib/utils/format'
 import 'react-datepicker/dist/react-datepicker.css'
 import './DateRangePicker.css'
 
@@ -51,7 +51,7 @@ export const DateRangePicker = ({ value, onChange, focusTrigger, label = 'Пер
                         variant='outlined'
                         label={label}
                         inputRef={inputRef}
-                        value={start && end ? `${formatDate(start)} — ${formatDate(end)}` : ''}
+                        value={start && end ? `${formatDateYMD(start)} — ${formatDateYMD(end)}` : ''}
                     />
                 }
                 shouldCloseOnSelect={false}

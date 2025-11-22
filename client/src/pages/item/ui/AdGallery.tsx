@@ -23,6 +23,7 @@ const ThumbSlide = styled(SwiperSlide)(() => ({
         opacity: 1,
     },
 }))
+
 export const AdGallery = ({ images }: AdGalleryProps) => {
     const [thumbsSwiper, setThumbsSwiper] = useState<SwiperType | null>(null)
 
@@ -38,6 +39,7 @@ export const AdGallery = ({ images }: AdGalleryProps) => {
             />
         )
     }
+
     return (
         <Box>
             <Swiper
@@ -45,7 +47,12 @@ export const AdGallery = ({ images }: AdGalleryProps) => {
                 navigation
                 thumbs={{ swiper: thumbsSwiper }}
                 modules={[FreeMode, Thumbs]}
-                style={{ width: '100%', height: 360, borderRadius: 8, overflow: 'hidden' }}
+                style={{
+                    width: '100%',
+                    height: '100%',
+                    borderRadius: 8,
+                    overflow: 'hidden',
+                }}
             >
                 {images.map((src, idx) => (
                     <SwiperSlide key={idx}>
@@ -73,7 +80,7 @@ export const AdGallery = ({ images }: AdGalleryProps) => {
                     freeMode
                     watchSlidesProgress
                     modules={[FreeMode, Thumbs]}
-                    style={{ marginTop: 12, height: 120 }}
+                    style={{ marginTop: 12, height: 95 }}
                 >
                     {images.map((src, idx) => (
                         <ThumbSlide key={idx}>

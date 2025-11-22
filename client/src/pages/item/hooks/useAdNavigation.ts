@@ -143,6 +143,11 @@ export const useAdNavigation = (currentAdId: number | null) => {
         }
     }
 
+    const handleExitClick = () => {
+        navigate({
+            pathname: '/list',
+        })
+    }
     const isPrevDisabled = (!prevAdId && (!hasPrevPage || !prevPageLastId)) || isListLoading
     const isNextDisabled = (!nextAdId && (!hasNextPage || !nextPageFirstId)) || isListLoading
 
@@ -154,5 +159,6 @@ export const useAdNavigation = (currentAdId: number | null) => {
         isNextDisabled,
         handlePrevClick,
         handleNextClick,
+        handleExitClick,
     }
 }

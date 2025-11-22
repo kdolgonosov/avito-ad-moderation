@@ -5,12 +5,14 @@ interface UseItemKeyboardShortcutsParams {
     isNextDisabled: boolean
     onPrev: () => void
     onNext: () => void
+    onExit: () => void
 }
 
-export const useItemKeyboardShortcuts = ({ isPrevDisabled, isNextDisabled, onPrev, onNext }: UseItemKeyboardShortcutsParams) => {
+export const useItemKeyboardShortcuts = ({ isPrevDisabled, isNextDisabled, onPrev, onNext, onExit }: UseItemKeyboardShortcutsParams) => {
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
             // игнорируем сочетания с модификаторами
+            console.log('event', event.key, event.code)
             if (event.altKey || event.ctrlKey || event.metaKey) return
 
             const target = event.target as HTMLElement | null
@@ -29,6 +31,11 @@ export const useItemKeyboardShortcuts = ({ isPrevDisabled, isNextDisabled, onPre
             if (event.key === 'ArrowLeft' && !isPrevDisabled) {
                 event.preventDefault()
                 onPrev()
+            }
+
+            if (event.key === 'Escape') {
+                event.preventDefault()
+                onExit()
             }
         }
 

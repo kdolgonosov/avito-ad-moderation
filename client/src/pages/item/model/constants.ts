@@ -1,1 +1,1 @@
-export const HISTORY_PAGE_SIZE = 3
+export const HISTORY_PAGE_SIZE = 2
