@@ -1,0 +1,19 @@
+version: "3.9"
+
+services:
+  server:
+    build: ./tech-int3-server
+    environment:
+      - PORT=3001
+    ports:
+      - "3001:3001"
+
+  client:
+    build:
+      context: ./client
+      args:
+        VITE_API_URL: http://localhost:3001/api/v1
+    ports:
+      - "80:80"
+    depends_on:
+      - server
