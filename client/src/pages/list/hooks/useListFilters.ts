@@ -1,20 +1,21 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo } from 'react'
 import { parseFiltersAndPageFromSearchParams } from '@/features/ad-filters/lib/urlState'
 import { useAdFiltersStore } from '@/features/ad-filters/model/adFilters.store'
 import type { AdFiltersValues, AdsListFilters } from '@/features/ad-filters/model/types'
 import { useDebouncedValue } from '@/shared/lib/hooks/useDebouncedValue'
 
+let lastInitKey: string | null = null
+
 export const useListFilters = (searchParams: URLSearchParams) => {
     const { status, categoryId, minPrice, maxPrice, search, sortBy, sortOrder, setFilters } = useAdFiltersStore()
 
-    // Инициализация фильтров из URL один раз
-    const initializedRef = useRef(false)
-
+    // Инициализация фильтров из URL один раз для конкретной строки параметров
     useEffect(() => {
-        if (initializedRef.current) return
-        initializedRef.current = true
+        const key = searchParams.toString()
+        if (!key) return
 
-        if (!searchParams.toString()) return
+        if (lastInitKey === key) return
+        lastInitKey = key
 
         const { filters } = parseFiltersAndPageFromSearchParams(searchParams)
         setFilters(filters)
