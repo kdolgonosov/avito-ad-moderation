@@ -134,7 +134,7 @@ export const ListPage = () => {
                         mb: 2,
                     }}
                 >
-                    <BulkAdModerationActions selectedIds={selectedIds as number[]} clearSelection={() => ''} />
+                    <BulkAdModerationActions selectedIds={selectedIds as number[]} clearSelection={clearSelection} />
                 </Box>
             )}
         </>

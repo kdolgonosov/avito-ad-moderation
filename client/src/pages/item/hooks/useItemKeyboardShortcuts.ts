@@ -12,7 +12,6 @@ export const useItemKeyboardShortcuts = ({ isPrevDisabled, isNextDisabled, onPre
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
             // игнорируем сочетания с модификаторами
-            console.log('event', event.key, event.code)
             if (event.altKey || event.ctrlKey || event.metaKey) return
 
             const target = event.target as HTMLElement | null

@@ -15,8 +15,6 @@ export const getAdsList = async (filters: AdsListFilters, signal?: AbortSignal):
         signal,
         paramsSerializer: params => qs.stringify(params, { arrayFormat: 'repeat', skipNulls: true }),
     })
-    console.log('data', data)
-
     return data
 }
 

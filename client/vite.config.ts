@@ -7,6 +7,15 @@ export default defineConfig({
     server: {
         port: 3000,
     },
+    build: {
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    mui: ['@mui/material', '@mui/icons-material'],
+                },
+            },
+        },
+    },
     resolve: {
         alias: {
             '@': path.resolve(__dirname, 'src'),

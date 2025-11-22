@@ -6,8 +6,6 @@ import { StatsPeriod } from '@/entities/stats/model/types'
 import { formatDateYMD } from '@/shared/lib/utils/format'
 import { DateRangePicker } from '@/shared/ui'
 import { useStatsData } from '../hooks/useStatsData'
-import { exportStatsCsv } from '../lib/exportStatsCsv'
-import { exportStatsPdf } from '../lib/exportStatsPdf'
 import { StatCard } from './StatCard'
 import { StatsActivityChart } from './StatsActivityChart'
 import { StatsCategoriesChart } from './StatsCategoriesChart'
@@ -48,10 +46,12 @@ export const StatsPage = () => {
         }
     }
 
-    const handleExportCsv = () => {
+    const handleExportCsv = async () => {
         if (period === StatsPeriod.Custom && isCustomIncomplete) return
 
-        exportStatsCsv({
+        const { exportStatsCsv } = await import('../lib/exportStatsCsv')
+
+        await exportStatsCsv({
             period,
             summary: summaryQuery.data,
             decisions: decisionsQuery.data,
@@ -60,13 +60,14 @@ export const StatsPage = () => {
             to: toStr,
         })
     }
-
     const handleExportPdf = async () => {
         if (!reportRef.current) return
         if (!moderator) return
         if (period === StatsPeriod.Custom && isCustomIncomplete) return
 
         try {
+            const { exportStatsPdf } = await import('../lib/exportStatsPdf')
+
             await exportStatsPdf({
                 container: reportRef.current,
                 moderatorInfo: `${moderator.name}, ${moderator.role}, ${moderator.email}`,
@@ -78,6 +79,23 @@ export const StatsPage = () => {
             console.error('Ошибка при формировании PDF', error)
         }
     }
+    // const handleExportPdf = async () => {
+    //     if (!reportRef.current) return
+    //     if (!moderator) return
+    //     if (period === StatsPeriod.Custom && isCustomIncomplete) return
+
+    //     try {
+    //         await exportStatsPdf({
+    //             container: reportRef.current,
+    //             moderatorInfo: `${moderator.name}, ${moderator.role}, ${moderator.email}`,
+    //             period,
+    //             from: fromStr,
+    //             to: toStr,
+    //         })
+    //     } catch (error) {
+    //         console.error('Ошибка при формировании PDF', error)
+    //     }
+    // }
 
     // данные для чартов
     const activityChartData = useMemo(() => {
