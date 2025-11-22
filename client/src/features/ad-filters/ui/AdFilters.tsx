@@ -1,10 +1,26 @@
 import { useEffect, useRef, useState, type ChangeEvent } from 'react'
 import SearchIcon from '@mui/icons-material/Search'
-import { Box, Button, FormControl, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, TextField, Typography, type SelectChangeEvent } from '@mui/material'
+import {
+    Box,
+    Button,
+    Checkbox,
+    Divider,
+    FormControl,
+    FormControlLabel,
+    FormGroup,
+    FormLabel,
+    InputAdornment,
+    MenuItem,
+    Paper,
+    Select,
+    Stack,
+    TextField,
+    Typography,
+    type SelectChangeEvent,
+} from '@mui/material'
 import { CATEGORIES, getCategoryIcon } from '@/entities/ad/model/categories'
 import { STATUS_ICONS } from '@/entities/ad/model/status'
 import type { AdStatus } from '@/entities/ad/model/types'
-import { StatusBadge } from '@/entities/ad/ui/StatusBadge'
 import { Kbd } from '@/shared/ui'
 import { INITIAL_FILTERS, SORT_OPTIONS, STATUS_OPTIONS } from '../model/constants'
 import type { AdFiltersValues } from '../model/types'
@@ -49,16 +65,6 @@ export const AdFilters = ({ filters, onFiltersChange }: AdFiltersBarProps) => {
         onFiltersChange({
             ...filters,
             search: event.target.value,
-        })
-    }
-
-    const handleStatusChange = (event: SelectChangeEvent<string[]>) => {
-        const value = event.target.value
-        const statusList = typeof value === 'string' ? value.split(',') : value
-
-        onFiltersChange({
-            ...filters,
-            status: statusList as AdStatus[],
         })
     }
 
@@ -148,126 +154,113 @@ export const AdFilters = ({ filters, onFiltersChange }: AdFiltersBarProps) => {
                         },
                     }}
                 />
-                <Stack direction='row' spacing={2} flexWrap='wrap' useFlexGap alignItems='center'>
+                <Stack direction='row' spacing={2} flexWrap='wrap' useFlexGap alignItems='start'>
                     {/* Статус */}
-                    <FormControl size='small' sx={{ minWidth: 180 }}>
-                        <InputLabel id='ad-status-label'>Статус</InputLabel>
-                        <Select
-                            labelId='ad-status-label'
-                            label='Статус'
-                            multiple
-                            value={filters.status as string[]}
-                            onChange={handleStatusChange}
-                            renderValue={selected => {
-                                const statuses = selected as AdStatus[]
+                    <Box sx={{ display: 'flex', flexDirection: 'column', minWidth: 220, flexShrink: 0 }}>
+                        <FormLabel sx={{ mb: 0.5 }}>Статус</FormLabel>
+                        <FormGroup sx={{ gap: 0.5 }}>
+                            {STATUS_OPTIONS.map(option => {
+                                const Icon = STATUS_ICONS[option.value]
+                                const value = option.value as AdStatus
+                                const checked = filters.status.includes(value)
 
-                                if (!statuses.length) {
-                                    return 'Все статусы'
+                                const handleToggle = () => {
+                                    const next = checked ? filters.status.filter(s => s !== value) : [...filters.status, value]
+
+                                    onFiltersChange({
+                                        ...filters,
+                                        status: next,
+                                    })
                                 }
 
                                 return (
-                                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                        {statuses.map(status => (
-                                            <StatusBadge key={status} status={status} size='small' variant='outlined' />
-                                        ))}
-                                    </Box>
-                                )
-                            }}
-                        >
-                            {STATUS_OPTIONS.map(option => {
-                                const Icon = STATUS_ICONS[option.value]
-                                return (
-                                    <MenuItem key={option.value} value={option.value}>
-                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                            <Icon fontSize='small' />
-                                            {option.label}
-                                        </Box>
-                                    </MenuItem>
+                                    <FormControlLabel
+                                        key={option.value}
+                                        control={<Checkbox size='small' checked={checked} onChange={handleToggle} />}
+                                        label={
+                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                                                <Icon fontSize='small' />
+                                                {option.label}
+                                            </Box>
+                                        }
+                                        sx={{ m: 0 }}
+                                    />
                                 )
                             })}
-                        </Select>
-                    </FormControl>
-                    {/* Категория */}
-                    <FormControl size='small' sx={{ minWidth: 190 }}>
-                        <InputLabel id='ad-category-label'>Категория</InputLabel>
-                        <Select
-                            labelId='ad-category-label'
-                            label='Категория'
-                            value={filters.categoryId === null ? '' : String(filters.categoryId)}
-                            onChange={e => {
-                                const raw = e.target.value
-                                const id = raw === '' ? null : Number(raw)
+                        </FormGroup>
+                    </Box>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', minWidth: 200 }}>
+                        <FormLabel sx={{ mb: 0.5 }}>Категория</FormLabel>
+                        <FormControl size='small' sx={{ minWidth: 190 }}>
+                            <Select
+                                displayEmpty
+                                value={filters.categoryId === null ? '' : String(filters.categoryId)}
+                                onChange={e => {
+                                    const raw = e.target.value
+                                    const id = raw === '' ? null : Number(raw)
 
-                                onFiltersChange({
-                                    ...filters,
-                                    categoryId: id,
-                                })
-                            }}
-                            renderValue={selected => {
-                                if (selected === '') return 'Все категории'
+                                    onFiltersChange({
+                                        ...filters,
+                                        categoryId: id,
+                                    })
+                                }}
+                                renderValue={selected => {
+                                    if (selected === '') return 'Все категории'
 
-                                const index = Number(selected)
-                                const Icon = getCategoryIcon(index)
+                                    const index = Number(selected)
+                                    const Icon = getCategoryIcon(index)
 
-                                return (
-                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                        <Icon fontSize='small' />
-                                        {CATEGORIES[index]}
-                                    </Box>
-                                )
-                            }}
-                        >
-                            <MenuItem value=''>
-                                <em>Все категории</em>
-                            </MenuItem>
-
-                            {CATEGORIES.map((label, index) => {
-                                const Icon = getCategoryIcon(index)
-                                return (
-                                    <MenuItem key={index} value={index}>
+                                    return (
                                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                             <Icon fontSize='small' />
-                                            {label}
+                                            {CATEGORIES[index]}
                                         </Box>
-                                    </MenuItem>
-                                )
-                            })}
-                        </Select>
-                    </FormControl>
+                                    )
+                                }}
+                            >
+                                <MenuItem value=''>
+                                    <em>Все категории</em>
+                                </MenuItem>
+
+                                {CATEGORIES.map((label, index) => {
+                                    const Icon = getCategoryIcon(index)
+                                    return (
+                                        <MenuItem key={index} value={index}>
+                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                <Icon fontSize='small' />
+                                                {label}
+                                            </Box>
+                                        </MenuItem>
+                                    )
+                                })}
+                            </Select>
+                        </FormControl>
+                    </Box>
                     {/* Цена от / до */}
-                    <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', flexShrink: 0 }}>
-                        <TextField
-                            size='small'
-                            label='Цена от'
-                            type='number'
-                            inputProps={{ min: 0 }}
-                            value={filters.minPrice ?? ''}
-                            onChange={handleMinPriceChange}
-                            sx={{ width: 120 }}
-                        />
-                        <TextField
-                            size='small'
-                            label='До'
-                            type='number'
-                            inputProps={{ min: 0 }}
-                            value={filters.maxPrice ?? ''}
-                            onChange={handleMaxPriceChange}
-                            sx={{ width: 120 }}
-                        />
+                    <Box sx={{ display: 'flex', flexDirection: 'column', minWidth: 200 }}>
+                        <FormLabel sx={{ mb: 0.5 }}>Цена, ₽</FormLabel>
+                        <Box sx={{ display: 'flex', gap: 1 }}>
+                            <TextField size='small' label='От' type='number' value={filters.minPrice ?? ''} onChange={handleMinPriceChange} sx={{ width: 120 }} />
+                            <TextField size='small' label='До' type='number' value={filters.maxPrice ?? ''} onChange={handleMaxPriceChange} sx={{ width: 120 }} />
+                        </Box>
                     </Box>
 
                     {/* Сортировка */}
-                    <FormControl size='small' sx={{ minWidth: 190 }}>
-                        <InputLabel id='ad-sort-label'>Сортировка</InputLabel>
-                        <Select labelId='ad-sort-label' label='Сортировка' value={currentSortValue} onChange={handleSortChange}>
-                            {SORT_OPTIONS.map(option => (
-                                <MenuItem key={option.value} value={option.value}>
-                                    {option.label}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
+
+                    <Box sx={{ display: 'flex', flexDirection: 'column', minWidth: 200 }}>
+                        <FormLabel sx={{ mb: 0.5 }}>Сортировка</FormLabel>
+                        <FormControl size='small' sx={{ minWidth: 190 }}>
+                            <Select value={currentSortValue} onChange={handleSortChange}>
+                                {SORT_OPTIONS.map(option => (
+                                    <MenuItem key={option.value} value={option.value}>
+                                        {option.label}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    </Box>
                 </Stack>
+                <Divider sx={{ my: 2 }} />
                 {hasActiveFilters && (
                     <Stack direction='row' spacing={1} justifyContent='flex-end'>
                         <Button variant='outlined' size='small' onClick={() => setIsPresetsOpen(true)}>

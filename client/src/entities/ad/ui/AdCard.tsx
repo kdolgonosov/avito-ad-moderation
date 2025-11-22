@@ -2,6 +2,7 @@ import { Link as RouterLink, useLocation } from 'react-router-dom'
 import BoltIcon from '@mui/icons-material/Bolt'
 import { Box, Card, CardActionArea, CardContent, Checkbox, Chip, Stack, Typography } from '@mui/material'
 import { AdPriority, type Advertisement } from '@/entities/ad/model/types'
+import { formatPrice } from '@/shared/lib/utils/format'
 import { getCategoryIcon } from '../model/categories'
 import { StatusBadge } from './StatusBadge'
 
@@ -86,10 +87,7 @@ export const AdCard = ({ ad, isNew, selectable = true, selected = false, onToggl
                                 </Typography>
 
                                 <Typography variant='body1' sx={{ mt: 1 }}>
-                                    {ad.price.toLocaleString('ru-RU', {
-                                        style: 'currency',
-                                        currency: 'RUB',
-                                    })}
+                                    {formatPrice(ad.price)}
                                 </Typography>
                             </Box>
 
