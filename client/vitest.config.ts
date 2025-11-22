@@ -18,7 +18,6 @@ export default defineConfig({
         setupFiles: 'src/shared/config/test/setupTests.ts',
         css: true,
         include: ['src/**/*.{test,spec}.{ts,tsx}'],
-        // красиво показывать диффы
         watch: false,
     },
 })
