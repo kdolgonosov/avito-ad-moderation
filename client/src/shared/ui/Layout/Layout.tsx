@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import { AppBar, Box, Container, Toolbar, Typography } from '@mui/material'
 import { ModeratorMenu } from '@/entities/moderator/ui/ModeratorMenu'
 import { ThemeSwitcher } from '@/features/ui-theme-switch/ui/ThemeSwitcher'
@@ -12,7 +13,7 @@ export const Layout = ({ children }: LayoutProps) => {
         <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
             <AppBar position='static'>
                 <Toolbar>
-                    <Typography variant='h6' sx={{ flexGrow: 1 }}>
+                    <Typography variant='h6' sx={{ flexGrow: 1, textDecoration: 'none', color: 'inherit' }} component={Link} to='/list'>
                         Модерации объявлений
                     </Typography>
                     <ThemeSwitcher />

@@ -11,9 +11,10 @@ interface ModerationDialogBaseProps {
     title?: string
     onClose: () => void
     onSubmit: (body: RejectAdRequestBody | RequestChangesBody) => void
+    isMobile?: boolean
 }
 
-export const AdModerationDialogBase = ({ mode, open, isProcessing = false, title, onClose, onSubmit }: ModerationDialogBaseProps) => {
+export const AdModerationDialogBase = ({ mode, open, isProcessing = false, title, onClose, onSubmit, isMobile = false }: ModerationDialogBaseProps) => {
     const [reason, setReason] = useState<RejectReason>(RejectReason.ForbiddenProduct)
     const [comment, setComment] = useState('')
     const [touched, setTouched] = useState(false)
@@ -25,6 +26,7 @@ export const AdModerationDialogBase = ({ mode, open, isProcessing = false, title
     }
 
     const handleClose = () => {
+        if (isProcessing) return
         resetLocalState()
         onClose()
     }
@@ -56,10 +58,28 @@ export const AdModerationDialogBase = ({ mode, open, isProcessing = false, title
     const effectiveTitle = title ?? (mode === ModerationDialogMode.Reject ? 'Отклонить объявление' : 'Вернуть на доработку')
 
     return (
-        <Dialog open={open} onClose={isProcessing ? undefined : handleClose} fullWidth maxWidth='sm'>
-            <DialogTitle>{effectiveTitle}</DialogTitle>
+        <Dialog
+            open={open}
+            onClose={handleClose}
+            fullWidth
+            maxWidth='sm'
+            fullScreen={isMobile}
+            PaperProps={{
+                sx: {
+                    m: isMobile ? 0 : undefined,
+                    borderRadius: isMobile ? 0 : 2,
+                },
+            }}
+        >
+            <DialogTitle sx={{ fontSize: { xs: 18, sm: 20 } }}>{effectiveTitle}</DialogTitle>
 
-            <DialogContent dividers>
+            <DialogContent
+                dividers={!isMobile}
+                sx={{
+                    pt: { xs: 1, sm: 2 },
+                    pb: { xs: 1, sm: 2 },
+                }}
+            >
                 <FormControl component='fieldset' sx={{ mt: 1 }}>
                     <FormLabel component='legend'>Причина</FormLabel>
                     <RadioGroup value={reason} onChange={handleReasonChange}>
@@ -84,11 +104,25 @@ export const AdModerationDialogBase = ({ mode, open, isProcessing = false, title
                 />
             </DialogContent>
 
-            <DialogActions>
-                <Button onClick={handleClose} disabled={isProcessing}>
+            <DialogActions
+                sx={{
+                    px: { xs: 2, sm: 3 },
+                    pb: { xs: 2, sm: 2 },
+                    pt: { xs: 1, sm: 1 },
+                    flexDirection: { xs: 'column-reverse', sm: 'row' },
+                    gap: { xs: 1, sm: 0 },
+                }}
+            >
+                <Button onClick={handleClose} disabled={isProcessing} fullWidth={isMobile}>
                     Отмена
                 </Button>
-                <Button variant='contained' color={mode === ModerationDialogMode.Reject ? 'error' : 'warning'} onClick={handleSubmit} disabled={isProcessing}>
+                <Button
+                    variant='contained'
+                    color={mode === ModerationDialogMode.Reject ? 'error' : 'warning'}
+                    onClick={handleSubmit}
+                    disabled={isProcessing}
+                    fullWidth={isMobile}
+                >
                     Подтвердить
                 </Button>
             </DialogActions>

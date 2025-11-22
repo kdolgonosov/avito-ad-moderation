@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useMediaQuery, useTheme } from '@mui/material'
 import { useBulkAdModerationMutations } from '@/entities/ad/hooks/useBulkAdModerationMutations'
 import { BulkAdModerationDialog } from '@/features/ad-moderation/ui/BulkAdModerationDialog'
 import type { ModerationDialogMode } from '../model/types'
@@ -16,7 +17,8 @@ export const BulkAdModerationActions = ({ selectedIds, clearSelection }: BulkAdM
 
     const hasSelection = selectedIds.length > 0
     const isDialogOpen = dialogMode !== null
-
+    const theme = useTheme()
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
     const handleOpenDialog = (mode: ModerationDialogMode) => {
         if (!hasSelection) return
         setDialogMode(mode)
@@ -39,19 +41,12 @@ export const BulkAdModerationActions = ({ selectedIds, clearSelection }: BulkAdM
                 isApproved={false}
                 isProcessing={isProcessing || !hasSelection}
                 isDialogOpen={isDialogOpen}
+                isMobile={isMobile}
                 onApprove={handleApprove}
                 onOpenDialog={handleOpenDialog}
             />
 
-            {dialogMode && (
-                <BulkAdModerationDialog
-                    selectedIds={selectedIds}
-                    mode={dialogMode}
-                    open={isDialogOpen}
-                    onClose={handleCloseDialog}
-                    // onAfterSuccess={clearSelection}
-                />
-            )}
+            {dialogMode && <BulkAdModerationDialog selectedIds={selectedIds} mode={dialogMode} open={isDialogOpen} onClose={handleCloseDialog} />}
         </>
     )
 }

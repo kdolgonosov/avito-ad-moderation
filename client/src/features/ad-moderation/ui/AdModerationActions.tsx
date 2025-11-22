@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useMediaQuery, useTheme } from '@mui/material'
 import { useAdModerationMutations } from '@/entities/ad/hooks/useAdModerationMutations'
 import { AdStatus } from '@/entities/ad/model/types'
 import { AdModerationDialog } from '@/features/ad-moderation/ui/AdModerationDialog'
@@ -18,6 +19,9 @@ export const AdModerationActions = ({ adId, currentStatus }: AdModerationActions
     const isApproved = currentStatus === AdStatus.Approved
     const isDialogOpen = dialogMode !== null
 
+    const theme = useTheme()
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
+
     const handleOpenDialog = (mode: ModerationDialogMode) => setDialogMode(mode)
     const handleCloseDialog = () => setDialogMode(null)
 
@@ -27,6 +31,7 @@ export const AdModerationActions = ({ adId, currentStatus }: AdModerationActions
                 isApproved={isApproved}
                 isProcessing={isProcessing}
                 isDialogOpen={isDialogOpen}
+                isMobile={isMobile}
                 onApprove={() => approveMutation.mutate()}
                 onOpenDialog={handleOpenDialog}
             />

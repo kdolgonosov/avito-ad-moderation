@@ -1,4 +1,4 @@
-import { Card, CardContent, Typography } from '@mui/material'
+import { Card, CardContent, Typography, useMediaQuery, useTheme } from '@mui/material'
 import { BarChart } from '@mui/x-charts'
 
 interface StatsCategoriesChartProps {
@@ -7,11 +7,28 @@ interface StatsCategoriesChartProps {
         values: number[]
     } | null
 }
+
 export const StatsCategoriesChart = ({ categoriesChartData }: StatsCategoriesChartProps) => {
+    const theme = useTheme()
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
+
+    const chartHeight = isMobile ? 240 : 320
+
     return (
         <Card sx={{ mb: 3 }}>
-            <CardContent>
-                <Typography variant='h6' gutterBottom>
+            <CardContent
+                sx={{
+                    py: { xs: 1.5, sm: 2 },
+                    px: { xs: 1.5, sm: 2 },
+                }}
+            >
+                <Typography
+                    variant='h6'
+                    gutterBottom
+                    sx={{
+                        fontSize: { xs: 16, sm: 18 },
+                    }}
+                >
                     Проверенные объявления по категориям
                 </Typography>
 
@@ -23,7 +40,7 @@ export const StatsCategoriesChart = ({ categoriesChartData }: StatsCategoriesCha
 
                 {categoriesChartData && (
                     <BarChart
-                        height={320}
+                        height={chartHeight}
                         xAxis={[
                             {
                                 data: categoriesChartData.labels,
@@ -37,10 +54,10 @@ export const StatsCategoriesChart = ({ categoriesChartData }: StatsCategoriesCha
                             },
                         ]}
                         margin={{
-                            top: 20,
-                            right: 20,
-                            bottom: 60,
-                            left: 40,
+                            top: 16,
+                            right: isMobile ? 8 : 20,
+                            bottom: isMobile ? 70 : 80,
+                            left: isMobile ? 32 : 40,
                         }}
                     />
                 )}

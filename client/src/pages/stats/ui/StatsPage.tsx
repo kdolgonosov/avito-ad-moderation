@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from 'react'
-import { Box, Button, CircularProgress, LinearProgress, Stack, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
+import { Box, Button, CircularProgress, LinearProgress, Stack, ToggleButton, ToggleButtonGroup, Typography, useMediaQuery, useTheme } from '@mui/material'
 import { useCurrentModerator } from '@/entities/moderator/hooks/useCurrentModerator'
 import { ModeratorHeader } from '@/entities/moderator/ui/ModeratorHeader'
 import { StatsPeriod } from '@/entities/stats/model/types'
@@ -16,6 +16,9 @@ import { StatsDecisionsPieChart } from './StatsDecisionsPieChart'
 export const StatsPage = () => {
     const [period, setPeriod] = useState<StatsPeriod>(StatsPeriod.Today)
     const { data: moderator } = useCurrentModerator()
+
+    const theme = useTheme()
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
 
     const [focusKey, setFocusKey] = useState(0)
     const [customRange, setCustomRange] = useState<[Date | null, Date | null]>([null, null])
@@ -121,17 +124,40 @@ export const StatsPage = () => {
             <Box
                 sx={{
                     display: 'flex',
+                    flexDirection: { xs: 'column', md: 'row' },
                     justifyContent: 'space-between',
-                    alignItems: 'center',
+                    alignItems: { xs: 'flex-start', md: 'center' },
                     mb: 3,
                     gap: 2,
                     flexWrap: 'wrap',
                 }}
             >
-                <Typography variant='h5'>Статистика</Typography>
+                <Typography
+                    variant='h5'
+                    sx={{
+                        fontSize: { xs: '1.3rem', sm: '1.5rem' },
+                    }}
+                >
+                    Статистика
+                </Typography>
 
-                <Stack direction='row' spacing={2} alignItems='center' flexWrap='wrap'>
-                    <ToggleButtonGroup size='small' color='primary' value={period} exclusive onChange={handlePeriodChange}>
+                <Stack
+                    direction={{ xs: 'column', md: 'row' }}
+                    spacing={{ xs: 1.5, md: 2 }}
+                    alignItems={{ xs: 'flex-start', md: 'center' }}
+                    flexWrap='wrap'
+                    sx={{ width: { xs: '100%', md: 'auto' } }}
+                >
+                    <ToggleButtonGroup
+                        size='small'
+                        color='primary'
+                        value={period}
+                        exclusive
+                        onChange={handlePeriodChange}
+                        sx={{
+                            flexWrap: 'wrap',
+                        }}
+                    >
                         <ToggleButton value={StatsPeriod.Today}>Сегодня</ToggleButton>
                         <ToggleButton value={StatsPeriod.Week}>7 дней</ToggleButton>
                         <ToggleButton value={StatsPeriod.Month}>30 дней</ToggleButton>
@@ -151,11 +177,11 @@ export const StatsPage = () => {
                         />
                     )}
 
-                    <Stack direction='row' spacing={1}>
-                        <Button variant='outlined' size='small' onClick={handleExportCsv} disabled={isExportDisabled || !summary}>
+                    <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} sx={{ width: { xs: '100%', sm: 'auto' } }}>
+                        <Button variant='outlined' size='small' onClick={handleExportCsv} disabled={isExportDisabled || !summary} fullWidth={isMobile}>
                             Экспорт CSV
                         </Button>
-                        <Button variant='outlined' size='small' onClick={handleExportPdf} disabled={isExportDisabled || !summary}>
+                        <Button variant='outlined' size='small' onClick={handleExportPdf} disabled={isExportDisabled || !summary} fullWidth={isMobile}>
                             PDF отчёт
                         </Button>
                     </Stack>

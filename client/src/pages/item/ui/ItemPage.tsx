@@ -1,5 +1,5 @@
 import { Navigate, Link as RouterLink } from 'react-router-dom'
-import { Box, Button, Card, CardContent, CircularProgress, Divider, Stack, Typography } from '@mui/material'
+import { Box, Button, Card, CardContent, CircularProgress, Divider, Stack, Typography, useMediaQuery, useTheme } from '@mui/material'
 import { AdModerationActions } from '@/features/ad-moderation/ui/AdModerationActions'
 import { Kbd } from '@/shared/ui'
 import { useAdItem, useAdNavigation, useModerationHistory } from '../hooks'
@@ -11,6 +11,9 @@ import { ModerationHistorySection } from './ModerationHistorySection'
 import { SellerInfoSection } from './SellerInfoSection'
 
 export const ItemPage = () => {
+    const theme = useTheme()
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
+
     const { ad, isLoading, isError, isInvalidId, numericId } = useAdItem()
     const { sortedHistory, historyPage, historyPageItems, totalHistoryPages, handleHistoryPageChange } = useModerationHistory(ad?.moderationHistory)
     const { isPrevDisabled, isNextDisabled, handlePrevClick, handleNextClick, handleExitClick } = useAdNavigation(ad?.id ?? numericId)
@@ -48,30 +51,77 @@ export const ItemPage = () => {
         )
     }
 
+    const renderKbd = (key: string) => (!isMobile ? <Kbd>{key}</Kbd> : null)
+
     return (
         <Box>
             <Box
                 sx={{
                     mb: 2,
                     display: 'flex',
+                    flexDirection: { xs: 'column', sm: 'row' },
+                    gap: { xs: 1, sm: 0 },
                     justifyContent: 'space-between',
-                    alignItems: 'center',
+                    alignItems: { xs: 'stretch', sm: 'center' },
                     position: 'sticky',
                     top: 16,
                     zIndex: 20,
                 }}
             >
-                <Button component={RouterLink} to='/list' variant='contained' size='medium' onClick={handleExitClick}>
-                    <Kbd>Esc</Kbd> К списку
+                <Button
+                    component={RouterLink}
+                    to='/list'
+                    variant='contained'
+                    size={isMobile ? 'small' : 'medium'}
+                    onClick={handleExitClick}
+                    fullWidth={isMobile}
+                    sx={{
+                        justifyContent: 'flex-start',
+                        gap: 1,
+                        py: { xs: 0.75, sm: 1 },
+                        fontSize: { xs: 14, sm: 16 },
+                    }}
+                >
+                    {renderKbd('Esc')}К списку
                 </Button>
 
-                <Stack direction='row' spacing={1}>
-                    <Button variant='contained' size='medium' disabled={isPrevDisabled} onClick={handlePrevClick}>
-                        <Kbd>←</Kbd> Предыдущее
+                <Stack
+                    direction='row'
+                    spacing={1}
+                    sx={{
+                        width: { xs: '100%', sm: 'auto' },
+                    }}
+                >
+                    <Button
+                        variant='contained'
+                        size={isMobile ? 'small' : 'medium'}
+                        disabled={isPrevDisabled}
+                        onClick={handlePrevClick}
+                        fullWidth={isMobile}
+                        sx={{
+                            gap: 1,
+                            py: { xs: 0.75, sm: 1 },
+                            fontSize: { xs: 14, sm: 16 },
+                        }}
+                    >
+                        {renderKbd('←')}
+                        Предыдущее
                     </Button>
 
-                    <Button variant='contained' size='medium' disabled={isNextDisabled} onClick={handleNextClick}>
-                        Следующее <Kbd>→</Kbd>
+                    <Button
+                        variant='contained'
+                        size={isMobile ? 'small' : 'medium'}
+                        disabled={isNextDisabled}
+                        onClick={handleNextClick}
+                        fullWidth={isMobile}
+                        sx={{
+                            gap: 1,
+                            py: { xs: 0.75, sm: 1 },
+                            fontSize: { xs: 14, sm: 16 },
+                        }}
+                    >
+                        Следующее
+                        {renderKbd('→')}
                     </Button>
                 </Stack>
             </Box>
