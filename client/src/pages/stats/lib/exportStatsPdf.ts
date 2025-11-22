@@ -1,15 +1,18 @@
 import html2canvas from 'html2canvas'
 import jsPDF from 'jspdf'
-import type { StatsPeriod } from '@/entities/stats/model/types'
+import { StatsPeriod } from '@/entities/stats/model/types'
 import { loadPdfFont } from '@/shared/pdf/loadPdfFont'
 import { PERIOD_LABELS } from '../model/constants'
 
 interface ExportPdfParams {
     container: HTMLDivElement
+    moderatorInfo: string
     period: StatsPeriod
+    from?: string // для кастомного периода
+    to?: string // для кастомного периода
 }
 
-export const exportStatsPdf = async ({ container, period }: ExportPdfParams) => {
+export const exportStatsPdf = async ({ container, moderatorInfo, period, from, to }: ExportPdfParams) => {
     const canvas = await html2canvas(container, {
         scale: 2,
         useCORS: true,
@@ -32,11 +35,13 @@ export const exportStatsPdf = async ({ container, period }: ExportPdfParams) => 
 
     pdf.setFontSize(18)
     pdf.text('Отчёт по модерации объявлений', marginX, headerY)
-
     pdf.setFontSize(12)
-    pdf.text(`Период: ${PERIOD_LABELS[period]}`, marginX, headerY + 8)
+    pdf.text(`${moderatorInfo}`, marginX, headerY + 8)
 
-    const imageTop = headerY + 20
+    const periodText = period === StatsPeriod.Custom && from && to ? `${from} — ${to}` : PERIOD_LABELS[period]
+    pdf.text(`Период: ${periodText}`, marginX, headerY + 16)
+
+    const imageTop = headerY + 28
     const maxImageHeight = pageHeight - imageTop - 10
 
     const fullImgWidth = pageWidth - marginX * 2

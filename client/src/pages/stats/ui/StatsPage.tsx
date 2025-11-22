@@ -1,5 +1,6 @@
 import { useMemo, useRef, useState } from 'react'
 import { Box, Button, CircularProgress, LinearProgress, Stack, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
+import { useCurrentModerator } from '@/entities/moderator/hooks/useCurrentModerator'
 import { ModeratorHeader } from '@/entities/moderator/ui/ModeratorHeader'
 import { StatsPeriod } from '@/entities/stats/model/types'
 import { formatDateYMD } from '@/shared/lib/utils/format'
@@ -14,6 +15,7 @@ import { StatsDecisionsPieChart } from './StatsDecisionsPieChart'
 
 export const StatsPage = () => {
     const [period, setPeriod] = useState<StatsPeriod>(StatsPeriod.Today)
+    const { data: moderator } = useCurrentModerator()
 
     const [focusKey, setFocusKey] = useState(0)
     const [customRange, setCustomRange] = useState<[Date | null, Date | null]>([null, null])
@@ -51,17 +53,23 @@ export const StatsPage = () => {
             summary: summaryQuery.data,
             decisions: decisionsQuery.data,
             categories: categoriesQuery.data,
+            from: fromStr,
+            to: toStr,
         })
     }
 
     const handleExportPdf = async () => {
         if (!reportRef.current) return
+        if (!moderator) return
         if (period === StatsPeriod.Custom && isCustomIncomplete) return
 
         try {
             await exportStatsPdf({
                 container: reportRef.current,
+                moderatorInfo: `${moderator.name}, ${moderator.role}, ${moderator.email}`,
                 period,
+                from: fromStr,
+                to: toStr,
             })
         } catch (error) {
             console.error('Ошибка при формировании PDF', error)
@@ -105,7 +113,7 @@ export const StatsPage = () => {
     }, [categoriesQuery.data])
 
     const summary = summaryQuery.data
-    const isExportDisabled = isInitialLoading || (period === StatsPeriod.Custom && isCustomIncomplete)
+    const isExportDisabled = isInitialLoading || (period === StatsPeriod.Custom && isCustomIncomplete) || !moderator
 
     return (
         <Box>

@@ -1,4 +1,4 @@
-import type { CategoriesChartData, DecisionsData, StatsPeriod, StatsSummary } from '@/entities/stats/model/types'
+import { StatsPeriod, type CategoriesChartData, type DecisionsData, type StatsSummary } from '@/entities/stats/model/types'
 import { PERIOD_LABELS } from '../model/constants'
 
 interface ExportCsvParams {
@@ -6,12 +6,14 @@ interface ExportCsvParams {
     summary?: StatsSummary
     decisions?: DecisionsData
     categories?: CategoriesChartData
+    from?: string // для кастомного периода
+    to?: string // для кастомного периода
 }
 
-export const exportStatsCsv = ({ period, summary, decisions, categories }: ExportCsvParams) => {
+export const exportStatsCsv = ({ period, summary, decisions, categories, from, to }: ExportCsvParams) => {
     const lines: string[] = []
-
-    lines.push(`Период;${PERIOD_LABELS[period]}`)
+    const periodText = period === StatsPeriod.Custom && from && to ? `${from} — ${to}` : PERIOD_LABELS[period]
+    lines.push(`Период;${periodText}`)
     lines.push('')
 
     if (summary) {
