@@ -6,9 +6,10 @@ interface LastUpdatedInfoProps {
     lastUpdatedAt: Date | null
     isFetching: boolean
     onRefresh: () => void
+    isAutoRefetchEnabled: boolean
 }
 
-export const LastUpdatedInfo = ({ lastUpdatedAt, isFetching, onRefresh }: LastUpdatedInfoProps) => {
+export const LastUpdatedInfo = ({ lastUpdatedAt, isFetching, onRefresh, isAutoRefetchEnabled }: LastUpdatedInfoProps) => {
     const [timeAgo, setTimeAgo] = useState('–')
 
     useEffect(() => {
@@ -35,22 +36,29 @@ export const LastUpdatedInfo = ({ lastUpdatedAt, isFetching, onRefresh }: LastUp
 
     return (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Typography variant='body2' sx={{ opacity: 0.8 }}>
-                Обновлено: {timeAgo}
-            </Typography>
-
-            <RefreshIcon
-                onClick={onRefresh}
-                sx={{
-                    cursor: 'pointer',
-                    opacity: 0.7,
-                    transition: 'transform 0.3s ease',
-                    '&:hover': { opacity: 1 },
-                    ...(isFetching && {
-                        animation: 'spin 1s linear infinite',
-                    }),
-                }}
-            />
+            {isAutoRefetchEnabled ? (
+                <>
+                    <Typography variant='body2' sx={{ opacity: 0.8 }}>
+                        Обновлено: {timeAgo}
+                    </Typography>
+                    <RefreshIcon
+                        onClick={onRefresh}
+                        sx={{
+                            cursor: 'pointer',
+                            opacity: 0.7,
+                            transition: 'transform 0.3s ease',
+                            '&:hover': { opacity: 1 },
+                            ...(isFetching && {
+                                animation: 'spin 1s linear infinite',
+                            }),
+                        }}
+                    />
+                </>
+            ) : (
+                <Typography variant='body2' color='text.secondary' sx={{ opacity: 0.8 }}>
+                    Автообновление приостановлено
+                </Typography>
+            )}
         </Box>
     )
 }

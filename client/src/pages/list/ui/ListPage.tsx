@@ -63,7 +63,9 @@ export const ListPage = () => {
             >
                 {isLoading ? <CircularProgress size='small' /> : <Typography variant='body2'>Найдено {totalItems} объявлений</Typography>}
 
-                {!isLoading && <LastUpdatedInfo lastUpdatedAt={lastUpdatedAt} isFetching={isFetching} onRefresh={() => refetch()} />}
+                {!isLoading && (
+                    <LastUpdatedInfo lastUpdatedAt={lastUpdatedAt} isFetching={isFetching} onRefresh={() => refetch()} isAutoRefetchEnabled={isAutoRefetchEnabled} />
+                )}
             </Box>
             {hasSelection && (
                 <Box
