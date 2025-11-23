@@ -8,7 +8,7 @@ export const ThemeSwitcher = () => {
     const isDark = mode === 'dark'
 
     return (
-        <Tooltip title={isDark ? 'Светлая тема' : 'Тёмная тема'}>
+        <Tooltip title={isDark ? 'Светлая тема' : 'Тёмная тема'} sx={{ mr: 1 }}>
             <IconButton color='inherit' onClick={toggleMode}>
                 {isDark ? <Brightness7 /> : <Brightness4 />}
             </IconButton>

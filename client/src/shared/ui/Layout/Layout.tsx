@@ -13,7 +13,7 @@ export const Layout = ({ children }: LayoutProps) => {
         <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
             <AppBar position='static'>
                 <Toolbar>
-                    <Typography variant='h6' sx={{ flexGrow: 1, textDecoration: 'none', color: 'inherit' }} component={Link} to='/list'>
+                    <Typography variant='h6' sx={{ flexGrow: 1, textDecoration: 'none', color: 'inherit' }}>
                         Модерации объявлений
                     </Typography>
                     <Button color='inherit' component={Link} to='/list' sx={{ mr: 4 }}>
